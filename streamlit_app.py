@@ -9,6 +9,7 @@ import streamlit.components.v1 as components
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
+import matplotlib.pyplot as plt
 
 df = pd.read_csv("student_data.csv")
 app_page = st.sidebar.selectbox("Select Page", ['Introduction', 'Data Exploration', 'Visualization', 'Prediction'])
@@ -22,7 +23,7 @@ if app_page == 'Introduction':
 
     st.write("""
     ## Introduction
-    This app is designed to explore and analyze student alcohol consumption data, with a specific focus on high school students in Portugal. The data used in this application is based on a study conducted on students from two Portuguese schools, one located in the city and the other in a rural area.
+    This app is designed to explore and analyze student alcohol consumption data, with a specific focus on high school students in Portugal.
 
     Alcohol consumption among students is a critical public health concern, as it can lead to various long-term effects on health, academic performance, and social well-being. This dataset provides valuable insights into the social, familial, and personal factors that may influence alcohol consumption habits in adolescents.
 
@@ -31,23 +32,19 @@ if app_page == 'Introduction':
 
     ## Objective
     This app aims to:
-    - Explore student alcohol consumption patterns in Portugal.
     - Identify the key factors influencing alcohol consumption.
     - Provide insights into the impact of alcohol consumption on students' academic performance and social behavior.
 
-    Understanding the factors that contribute to alcohol consumption in students can help educators, parents, and policymakers create effective prevention and intervention strategies to mitigate its negative effects.
+    Understanding the factors that contribute to alcohol consumption in students can help educators, parents, and policymakers create effective prevention.
 
     ## Key Features
-    - Visualization of student alcohol consumption on both weekdays and weekends.
+    - Visualization of student alcohol consumption on both weekdays & weekends.
     - Analysis of the relationships between alcohol consumption and various factors such as family structure, peer influence, and academic performance.
-    - Machine learning models to predict alcohol consumption based on input features.
 
     """)
 
 elif app_page == 'Data Exploration':
     
-    # st.dataframe(df.head(3))
-
     st.title("Data Exploration")
 
     st.subheader("01 Description of the Dataset")
@@ -65,7 +62,7 @@ elif app_page == 'Data Exploration':
         st.error("There are missing values.")
 
     if st.button("Generate Report"):
-        #function to load html fiel
+        #function to load html file
         def read_html_report(file_path):
             with codecs.open(file_path, 'r', encoding="utf-8") as f:
                 return f.read()
@@ -76,7 +73,6 @@ elif app_page == 'Data Exploration':
         st.title("Streamlit Quality Report")
         
         st.components.v1.html(html_report, height=1000,scrolling=True)
-
 
 
 elif app_page == 'Visualization':
@@ -98,6 +94,24 @@ elif app_page == 'Visualization':
 
     df2 = df[[values_pairplot[0],values_pairplot[1],values_pairplot[2],values_pairplot[3]]]
     st.pyplot(sns.pairplot(df2))
+
+    st.subheader("Distribution of Alcohol Consumption Among Students") 
+    # Create a figure for the histograms
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+    # Plotting the histograms using seaborn
+    sns.histplot(df['Dalc'], bins=5, kde=False, ax=axes[0])
+    axes[0].set_title('Workday Alcohol Consumption (Dalc)')
+
+    sns.histplot(df['Walc'], bins=5, kde=False, ax=axes[1])
+    axes[1].set_title('Weekend Alcohol Consumption (Walc)')
+
+    # Adjust layout for better spacing
+    plt.tight_layout()
+
+    # Use Streamlit's pyplot to display the figure
+    st.pyplot(fig)
+
 
 elif app_page == "Prediction":
     st.title("Prediction")
