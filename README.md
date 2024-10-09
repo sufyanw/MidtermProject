@@ -1,19 +1,36 @@
-# 🎈 Blank app template
+# 🍷 Student Alcohol Consumption App
 
-A simple Streamlit app template for you to modify!
+## Overview
+The **Student Alcohol Consumption App** is a Streamlit-based web application that allows users to explore and analyze alcohol consumption patterns among high school students in Portugal. Using machine learning models and data visualizations, the app highlights key factors that influence student alcohol consumption and its potential impact on academic performance and social behavior.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
+## Features
+- **Interactive Data Visualizations:** Visualize alcohol consumption patterns on weekdays and weekends.
+- **Data Insights:** Analyze relationships between various demographic, familial, and academic factors and student alcohol consumption.
+- **Machine Learning Predictions:** Use a linear regression model to predict alcohol consumption based on selected input features.
 
-### How to run it on your own machine
+## Dataset
+The dataset used in this app comes from a survey conducted on secondary school students from two Portuguese schools: one urban and one rural. It includes details on student alcohol consumption and several other factors:
+- Demographic information (age, gender)
+- Family background (parents’ education, family size)
+- Social relationships (friendships, time spent with family)
+- Academic performance
 
-1. Install the requirements
+The primary objective is to understand how these factors influence alcohol consumption behavior in students.
 
-   ```
-   $ pip install -r requirements.txt
-   ```
+## Installation and Usage
 
-2. Run the app
+### Prerequisites
+To run this project locally, ensure you have the following installed:
+- Python 3.x
+- Streamlit
+- Pandas
+- Numpy
+- PIL (Python Imaging Library)
+- Seaborn
+- Scikit-learn
 
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+### Setup Instructions
+1. Clone this repository to your local machine.
+2. Install the required dependencies using pip:
+```bash
+pip install streamlit pandas numpy seaborn scikit-learn pillow
