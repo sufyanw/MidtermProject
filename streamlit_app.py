@@ -90,27 +90,44 @@ elif app_page == 'Visualization':
 
 
     values_pairplot = st.multiselect("Select 4 variables:", list_columns, ["Dalc","Walc", "studytime", "absences"])
-    #creation of pairplot
 
     df2 = df[[values_pairplot[0],values_pairplot[1],values_pairplot[2],values_pairplot[3]]]
     st.pyplot(sns.pairplot(df2))
 
     st.subheader("Distribution of Alcohol Consumption Among Students") 
-    # Create a figure for the histograms
+
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
-    # Plotting the histograms using seaborn
     sns.histplot(df['Dalc'], bins=5, kde=False, ax=axes[0])
-    axes[0].set_title('Workday Alcohol Consumption (Dalc)')
+    axes[0].set_title('Weekday Alcohol Consumption (Dalc)')
 
     sns.histplot(df['Walc'], bins=5, kde=False, ax=axes[1])
     axes[1].set_title('Weekend Alcohol Consumption (Walc)')
 
-    # Adjust layout for better spacing
     plt.tight_layout()
-
-    # Use Streamlit's pyplot to display the figure
     st.pyplot(fig)
+
+    st.subheader("Correlation Heatmap of Numerical Variables")
+
+    numerical_columns = df.select_dtypes(include=[np.number]).columns
+    corr_matrix = df[numerical_columns].corr()
+
+    fig, ax = plt.subplots(figsize=(12, 10))
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5, square=True, ax=ax)
+
+    plt.title('Correlation Matrix of Numerical Variables')
+    
+    st.pyplot(fig)
+
+    st.subheader("Jointplot of Weekday Alcohol Consumption (Dalc) vs Final Course Grade (G3)")
+
+    plt.figure(figsize=(10, 6))
+    sns.jointplot(data=df, x='Dalc', y='G3', kind='scatter')
+
+    plt.suptitle('Relationship between Weekday Alcohol Consumption (Dalc) and Final Course Grade (G3)', y=1.03)
+    plt.subplots_adjust(top=0.95)
+
+    st.pyplot(plt)
 
 
 elif app_page == "Prediction":
@@ -126,11 +143,10 @@ elif app_page == "Prediction":
     # Check if at least one variable is selected
     if input_lr:
         df2 = df_sample[input_lr]
-        y = df_sample["Dalc"]  # Change this to the target variable as needed
-
-        # Test size selection
+        y = df_sample["Walc"] 
+   
         test_size = st.sidebar.slider("Select test size (in percentage)", min_value=10, max_value=90, value=20)
-        test_size = test_size / 100  # Convert to decimal for train_test_split
+        test_size = test_size / 100 
 
         # Step 1: Split into X and y
         X = df2
@@ -152,5 +168,3 @@ elif app_page == "Prediction":
         r2 = metrics.r2_score(predictions, y_test)
         st.write("Mean Absolute Error:", mae)
         st.write("R² Output:", r2)
-    else:
-        st.warning("Please select at least one variable to perform the prediction.")
