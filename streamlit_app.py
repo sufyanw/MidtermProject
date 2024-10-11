@@ -15,7 +15,7 @@ df = pd.read_csv("student_data.csv")
 app_page = st.sidebar.selectbox("Select Page", ['Introduction', 'Data Exploration', 'Visualization', 'Prediction'])
 
 if app_page == 'Introduction':
-    st.title("Student Alcohol Consumption App")
+    st.title("Student Alcohol Consumption 🍷")
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         image_path = Image.open("image.png")
@@ -45,13 +45,13 @@ if app_page == 'Introduction':
 
 elif app_page == 'Data Exploration':
     
-    st.title("Data Exploration")
+    st.title("Data Exploration 🔍")
 
-    st.subheader("01 Description of the Dataset")
+    st.subheader("Description of the Dataset")
 
     st.dataframe(df.describe())
 
-    st.subheader("02 Missing values")
+    st.subheader("Missing values")
 
     dfnull = df.isnull()/len(df)*100
     total_missing = dfnull.sum().round(2)
@@ -76,69 +76,94 @@ elif app_page == 'Data Exploration':
 
 
 elif app_page == 'Visualization':
+    st.title("Data Visualization 📈")
 
-    st.title("Data Visualization")
+    tab1, tab2, tab3, tab4 = st.tabs(["Line & Bar Charts", "Pairplot", "Distribution", "Correlation Heatmap"])
 
-    list_columns = df.columns
-    values = st.multiselect("Select 2 variables:", list_columns, ["Dalc","Walc"])
+    with tab1:
+        st.subheader("Line & Bar Charts")
+        list_columns = df.columns
+        values = st.multiselect("Select 2 variables:", list_columns, ["Dalc", "studytime"])
 
-    #creation of the line chart
-    st.line_chart(df, x=values[0], y=values[1])
+        if len(values) == 2:
+            st.line_chart(df.set_index(values[0])[values[1]])
+            st.bar_chart(df.set_index(values[0])[values[1]])
+        else:
+            st.warning("Please select exactly 2 variables.")
 
-    #creation of bar chart
-    st.bar_chart(df, x=values[0], y=values[1])
+    with tab2:
+        st.subheader("Pairplot")
+        values_pairplot = st.multiselect("Select 4 variables:", list_columns, ["Dalc", "Walc", "studytime", "absences"])
+
+        if len(values_pairplot) == 4:
+            df2 = df[values_pairplot]
+            st.pyplot(sns.pairplot(df2))
+        else:
+            st.warning("Please select exactly 4 variables.")
+
+    with tab3:
+        st.subheader("Distribution of Alcohol Consumption Among Students")
+        fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+        sns.histplot(df['Dalc'], bins=5, kde=False, ax=axes[0])
+        axes[0].set_title('Weekday Alcohol Consumption (Dalc)')
+
+        sns.histplot(df['Walc'], bins=5, kde=False, ax=axes[1])
+        axes[1].set_title('Weekend Alcohol Consumption (Walc)')
+
+        plt.tight_layout()
+        st.pyplot(fig)
+        st.write("""
+### Analysis of Alcohol Consumption Distributions
+
+1. **Weekday Alcohol Consumption (Dalc)**:
+   - The majority of students report very low alcohol consumption during weekdays, with the highest counts in the **1.0** category. 
+   - This indicates that students generally minimize alcohol intake due to academic & familial responsibilities.
+
+2. **Weekend Alcohol Consumption (Walc)**:
+   - Weekend consumption shows a different trend, with higher frequencies in the **1.0** and **2.0** categories, and a gradual increase into moderate levels (3.0 and above).
+   - Suggests students feel more inclined to consume alcohol socially during weekends.
+""")
 
 
-    values_pairplot = st.multiselect("Select 4 variables:", list_columns, ["Dalc","Walc", "studytime", "absences"])
+    with tab4:
+        st.subheader("Correlation Heatmap of Numerical Variables")
+        numerical_columns = df.select_dtypes(include=[np.number]).columns
+        corr_matrix = df[numerical_columns].corr()
 
-    df2 = df[[values_pairplot[0],values_pairplot[1],values_pairplot[2],values_pairplot[3]]]
-    st.pyplot(sns.pairplot(df2))
+        fig, ax = plt.subplots(figsize=(12, 10))
+        sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5, square=True, ax=ax)
 
-    st.subheader("Distribution of Alcohol Consumption Among Students") 
+        plt.title('Correlation Matrix of Numerical Variables')
+        st.pyplot(fig)
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+        st.write("""
+### Correlation Heatmap Analysis
 
-    sns.histplot(df['Dalc'], bins=5, kde=False, ax=axes[0])
-    axes[0].set_title('Weekday Alcohol Consumption (Dalc)')
+The heatmap illustrates the relationships between various factors influencing student behavior and performance. Notable correlations include:
 
-    sns.histplot(df['Walc'], bins=5, kde=False, ax=axes[1])
-    axes[1].set_title('Weekend Alcohol Consumption (Walc)')
+- **Alcohol Consumption:** 
+  - Weekend alcohol consumption (Walc) has a strong positive correlation (0.65) with weekday consumption (Dalc), indicating that students who drink more on weekends also tend to drink more during the week. If action is not taken for extreme cases, then the excessive alcohol intake can negatively impact school performance and familial relationships.
+  
+- **Academic Performance:**
+  - Final grades (G3) show a positive correlation with study time (0.43) and family relationships (0.27), suggesting that better study habits and family support may contribute to higher academic achievement.
 
-    plt.tight_layout()
-    st.pyplot(fig)
+- **Social Factors:**
+  - Freetime (0.29) and going out with friends (goout) (0.21) positively correlate with final grades (G3), indicating that students who engage socially and have more leisure time may perform better academically.
+""")
 
-    st.subheader("Correlation Heatmap of Numerical Variables")
 
-    numerical_columns = df.select_dtypes(include=[np.number]).columns
-    corr_matrix = df[numerical_columns].corr()
-
-    fig, ax = plt.subplots(figsize=(12, 10))
-    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5, square=True, ax=ax)
-
-    plt.title('Correlation Matrix of Numerical Variables')
-    
-    st.pyplot(fig)
-
-    st.subheader("Jointplot of Weekday Alcohol Consumption (Dalc) vs Final Course Grade (G3)")
-
-    plt.figure(figsize=(10, 6))
-    sns.jointplot(data=df, x='Dalc', y='G3', kind='scatter')
-
-    plt.suptitle('Relationship between Weekday Alcohol Consumption (Dalc) and Final Course Grade (G3)', y=1.03)
-    plt.subplots_adjust(top=0.95)
-
-    st.pyplot(plt)
 
 
 elif app_page == "Prediction":
-    st.title("Prediction")
+    st.title("Prediction 🔮")
     
     # Sample size selection
     sample_size = st.sidebar.slider("Select sample size from Dataset", min_value=10, max_value=100, step=10, value=20)
     df_sample = df.sample(frac=sample_size / 100)
 
     list_columns = df.columns
-    input_lr = st.multiselect("Select variables:", list_columns, ["Dalc", "Walc"])
+    input_lr = st.multiselect("Select variables:", list_columns, ["Dalc", "studytime"])
 
     # Check if at least one variable is selected
     if input_lr:
@@ -168,3 +193,5 @@ elif app_page == "Prediction":
         r2 = metrics.r2_score(predictions, y_test)
         st.write("Mean Absolute Error:", mae)
         st.write("R² Output:", r2)
+    else:
+        st.error("Please select at least one value.")
