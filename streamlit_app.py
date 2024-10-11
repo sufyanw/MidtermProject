@@ -10,11 +10,19 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
 import matplotlib.pyplot as plt
+from streamlit_option_menu import option_menu
 
 df = pd.read_csv("student_data.csv")
-app_page = st.sidebar.selectbox("Select Page", ['Introduction', 'Data Exploration', 'Visualization', 'Prediction'])
 
-if app_page == 'Introduction':
+selected = option_menu(
+  menu_title = None,
+  options = ["Introduction","Exploration","Visualization","Prediction"],
+  icons=["book", "search", "bar-chart-line", "magic"],
+  default_index = 0,
+  orientation = "horizontal",
+)
+
+if selected == 'Introduction':
     st.title("Student Alcohol Consumption 🍷")
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
@@ -43,39 +51,51 @@ if app_page == 'Introduction':
 
     """)
 
-elif app_page == 'Data Exploration':
+elif selected == 'Exploration':
     
     st.title("Data Exploration 🔍")
+    
+    # Create tabs for different sections of data exploration
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Dataset Head", "Dataset Tail", "Description", "Missing Values", "Generate Report"])
 
-    st.subheader("Description of the Dataset")
+    with tab1:
+        st.subheader("Head of the Dataset")
+        st.dataframe(df.head())
 
-    st.dataframe(df.describe())
+    with tab2:
+        st.subheader("Tail of the Dataset")
+        st.dataframe(df.tail())
 
-    st.subheader("Missing values")
+    with tab3:
+        st.subheader("Description of the Dataset")
+        st.dataframe(df.describe())
 
-    dfnull = df.isnull()/len(df)*100
-    total_missing = dfnull.sum().round(2)
-    st.write(total_missing)
-    if total_missing[0] == 0.0:
-        st.success("Congrats, there are no missing values!")
-    else:
-        st.error("There are missing values.")
+    with tab4:
+        st.subheader("Missing values")
+        dfnull = df.isnull()/len(df)*100
+        total_missing = dfnull.sum().round(2)
+        st.write(total_missing)
+        if total_missing[0] == 0.0:
+            st.success("Congrats, there are no missing values!")
+        else:
+            st.error("There are missing values.")
 
-    if st.button("Generate Report"):
-        #function to load html file
-        def read_html_report(file_path):
-            with codecs.open(file_path, 'r', encoding="utf-8") as f:
-                return f.read()
-        
-        html_report = read_html_report('report.html')
-        
-        #displaying file
-        st.title("Streamlit Quality Report")
-        
-        st.components.v1.html(html_report, height=1000,scrolling=True)
+    with tab5:
+        if st.button("Generate Report"):
+            # Function to load the HTML report
+            def read_html_report(file_path):
+                with codecs.open(file_path, 'r', encoding="utf-8") as f:
+                    return f.read()
+            
+            html_report = read_html_report('report.html')
+            
+            # Displaying the HTML report
+            st.title("Streamlit Quality Report")
+            st.components.v1.html(html_report, height=1000, scrolling=True)
 
 
-elif app_page == 'Visualization':
+
+elif selected == 'Visualization':
     st.title("Data Visualization 📈")
 
     tab1, tab2, tab3, tab4 = st.tabs(["Line & Bar Charts", "Pairplot", "Distribution", "Correlation Heatmap"])
@@ -93,7 +113,10 @@ elif app_page == 'Visualization':
 
     with tab2:
         st.subheader("Pairplot")
-        values_pairplot = st.multiselect("Select 4 variables:", list_columns, ["Dalc", "Walc", "studytime", "absences"])
+        
+        numeric_columns = df.select_dtypes(include=['number']).columns.tolist()
+        
+        values_pairplot = st.multiselect("Select 4 variables:", numeric_columns, ["Dalc", "Walc", "studytime", "absences"])
 
         if len(values_pairplot) == 4:
             df2 = df[values_pairplot]
@@ -155,7 +178,7 @@ The heatmap illustrates the relationships between various factors influencing st
 
 
 
-elif app_page == "Prediction":
+elif selected == "Prediction":
     st.title("Prediction 🔮")
     
     # Sample size selection
@@ -194,4 +217,4 @@ elif app_page == "Prediction":
         st.write("Mean Absolute Error:", mae)
         st.write("R² Output:", r2)
     else:
-        st.error("Please select at least one value.")
+        st.warning("Please select at least one value.")
