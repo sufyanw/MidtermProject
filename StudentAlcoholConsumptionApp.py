@@ -187,7 +187,7 @@ elif selected == "Prediction":
     sample_size = st.sidebar.slider("Select sample size from Dataset", min_value=10, max_value=100, step=10, value=20)
     df_sample = df.sample(frac=sample_size / 100)
 
-    list_columns = df.columns
+    list_columns = df.select_dtypes(include=[np.number]).columns
     input_lr = st.multiselect("Select variables:", list_columns, ["Walc", "studytime"])
 
     # Check if at least one variable is selected
