@@ -214,7 +214,9 @@ elif selected == "Prediction":
         # Step 6: Evaluate
         mae = metrics.mean_absolute_error(predictions, y_test)
         r2 = metrics.r2_score(predictions, y_test)
-        st.write("Mean Absolute Error:", mae)
-        st.write("R² Output:", r2)
+        mae_round = round(mae, 2)
+        r2_round = round(r2, 2)
+        st.write("Mean Absolute Error:", mae_round)
+        st.write("R² Output:", r2_round)
     else:
         st.warning("Please select at least one value.")
