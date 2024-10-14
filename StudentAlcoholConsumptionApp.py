@@ -1,3 +1,4 @@
+#Student Alcohol Consumption App
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -12,6 +13,7 @@ from sklearn import metrics
 import matplotlib.pyplot as plt
 from streamlit_option_menu import option_menu
 
+st.beta_set_page_config(page_title='Student Alcohol Consumption App')
 df = pd.read_csv("student_data.csv")
 
 selected = option_menu(
