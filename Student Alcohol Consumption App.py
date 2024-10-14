@@ -186,7 +186,7 @@ elif selected == "Prediction":
     df_sample = df.sample(frac=sample_size / 100)
 
     list_columns = df.columns
-    input_lr = st.multiselect("Select variables:", list_columns, ["Dalc", "studytime"])
+    input_lr = st.multiselect("Select variables:", list_columns, ["Walc", "studytime"])
 
     # Check if at least one variable is selected
     if input_lr:
