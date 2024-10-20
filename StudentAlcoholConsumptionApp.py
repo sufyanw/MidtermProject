@@ -225,7 +225,7 @@ elif selected == "Prediction":
     else:
         st.warning("Please select at least one value.")
 
-    st.write("###Analysis:")
+    st.write("### Analysis:")
     if r2_round > 0.5:
         st.write(f"The model shows a reasonable ability to predict weekday alcohol consumption (Dalc) with an R² score of {r2_round}. Variables like {', '.join(input_lr)} seem to significantly influence alcohol consumption behavior. A lower Mean Absolute Error (MAE) of {mae_round} indicates a better fit of the model.")
     else:
