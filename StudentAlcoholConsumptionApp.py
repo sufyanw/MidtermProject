@@ -188,7 +188,7 @@ elif selected == "Prediction":
     df_sample = df.sample(frac=sample_size / 100)
 
     list_columns = df.select_dtypes(include=[np.number]).columns
-    input_lr = st.multiselect("Select variables:", list_columns, ["Walc", "studytime"])
+    input_lr = st.multiselect("Select variables:", list_columns, ["Dalc", "studytime", "goout", "failures", "absences"])
 
     # Check if at least one variable is selected
     if input_lr:
@@ -218,6 +218,7 @@ elif selected == "Prediction":
         r2 = metrics.r2_score(predictions, y_test)
         mae_round = round(mae, 2)
         r2_round = round(r2, 2)
+        st.write("Predicted Dalc (Alcohol Consumed During Week): ", y)
         st.write("Mean Absolute Error:", mae_round)
         st.write("R² Output:", r2_round)
     else:
