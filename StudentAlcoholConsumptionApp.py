@@ -18,8 +18,8 @@ df = pd.read_csv("student_data.csv")
 
 selected = option_menu(
   menu_title = None,
-  options = ["Introduction","Exploration","Visualization","Prediction"],
-  icons=["book", "search", "bar-chart-line", "magic"],
+  options = ["Introduction","Exploration","Visualization","Prediction", "Conclusion"],
+  icons=["book", "search", "bar-chart-line", "magic", "bullseye"],
   default_index = 0,
   orientation = "horizontal",
 )
@@ -188,12 +188,12 @@ elif selected == "Prediction":
     df_sample = df.sample(frac=sample_size / 100)
 
     list_columns = df.select_dtypes(include=[np.number]).columns
-    input_lr = st.multiselect("Select variables:", list_columns, ["Dalc", "studytime", "goout", "failures", "absences"])
+    input_lr = st.multiselect("Select variables:", list_columns, ["studytime", "goout", "failures", "freetime", "absences"])
 
     # Check if at least one variable is selected
     if input_lr:
         df2 = df_sample[input_lr]
-        y = df_sample["Walc"] 
+        y = df_sample["Dalc"] 
    
         test_size = st.sidebar.slider("Select test size (in percentage)", min_value=10, max_value=90, value=20)
         test_size = test_size / 100 
@@ -212,14 +212,37 @@ elif selected == "Prediction":
 
         # Step 5: Prediction
         predictions = lr.predict(X_test)
-
+    
         # Step 6: Evaluate
+        avg_predicted_dalc = np.mean(predictions)
         mae = metrics.mean_absolute_error(predictions, y_test)
         r2 = metrics.r2_score(predictions, y_test)
         mae_round = round(mae, 2)
         r2_round = round(r2, 2)
-        st.write("Predicted Dalc (Alcohol Consumed During Week): ", y)
+        st.write("Average Predicted Dalc (Alcohol Consumed During the Week):", round(avg_predicted_dalc, 2))
         st.write("Mean Absolute Error:", mae_round)
         st.write("R² Output:", r2_round)
     else:
         st.warning("Please select at least one value.")
+
+    st.write("###Analysis:")
+    if r2_round > 0.5:
+        st.write(f"The model shows a reasonable ability to predict weekday alcohol consumption (Dalc) with an R² score of {r2_round}. Variables like {', '.join(input_lr)} seem to significantly influence alcohol consumption behavior. A lower Mean Absolute Error (MAE) of {mae_round} indicates a better fit of the model.")
+    else:
+        st.write(f"The model's performance is moderate with an R² score of {r2_round}. This suggests that while some relationship exists between the selected factors ({', '.join(input_lr)}) and alcohol consumption, more variables or complex modeling may be needed for improved accuracy.")
+
+elif selected == 'Conclusion':
+    st.title("Conclusion 🎯")
+    st.write("""
+    ### Key Insights:
+    Based on our analysis, the factors that most significantly impact student alcohol consumption include:
+
+    - **Family Relationships**: Students with strong family ties (as indicated by 'famrel') tend to have lower alcohol consumption.
+    - **Peer Influence**: Frequent socialization (measured by 'goout') correlates with higher alcohol intake, especially during weekends.
+    - **Academic Performance**: Poor academic performance and multiple failures ('failures') are associated with increased alcohol consumption.
+    
+    ### Solutions to Prevent Substance Abuse:
+    1. **Strengthening Family Support**: Encourage open communication between students and their families to foster emotional support and provide guidance on responsible behaviors.
+    2. **Alcohol Awareness Programs**: Implement alcohol prevention programs in schools that focus on educating students about the dangers of alcohol abuse and coping strategies for peer pressure.
+    3. **Extracurricular Engagement**: Promote healthy social activities and clubs that engage students in productive, alcohol-free environments, such as sports or volunteer work.
+    """)
