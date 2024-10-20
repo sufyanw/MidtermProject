@@ -214,10 +214,11 @@ elif selected == "Prediction":
         predictions = lr.predict(X_test)
 
         st.subheader("Trend of Selected Variables vs Weekday Alcohol Consumption")
-        fig, ax = plt.subplots()
-        sns.regplot(x=X_test[input_lr[0]], y=y_test, ax=ax)
-        ax.set_title(f"Regression Line: {input_lr[0]} vs Dalc")
-        st.pyplot(fig)
+        for var in input_lr:
+            fig, ax = plt.subplots()
+            sns.regplot(x=X_test[var], y=y_test, ax=ax)
+            ax.set_title(f"Regression Line: {var} vs Dalc")
+            st.pyplot(fig)
     
         # Step 6: Evaluate
         avg_predicted_dalc = np.mean(predictions)
